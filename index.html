@@ -22,8 +22,7 @@
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa, #f0f4ff); /* Soft initial gradient */
             background-size: 300% 300%;
             animation: gradientAnimation 15s ease infinite alternate;
-            /* UPDATED CURSOR: Sparkling Star */
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23FFD700" stroke="%23FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>') 12 12, auto;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%238A2BE2" stroke="%238A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="8"></circle></svg>') 10 10, auto;
         }
 
         /* Custom Color Palette */
@@ -323,17 +322,7 @@
         }
     </style>
 </head>
-<body class="antialiased">
-
-    <!-- Animated Background Blobs (for the entire page background) -->
-    <div class="blob-container">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-        <div class="blob blob-4"></div>
-    </div>
-
-    <!-- Main Content Wrapper -->
+<body>
     <div class="main-container relative w-full min-h-screen bg-light-bg shadow-lg rounded-2xl md:rounded-3xl overflow-hidden flex flex-col z-10">
 
         <!-- Top Header Navigation -->
@@ -453,7 +442,7 @@
                 <p class="text-gray-600 mb-6">Optimize, convert, and manipulate your images with ease.</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image convert jpg png webp gif resize compress crop ocr text rotate flip optimize favicon generator">
-                        <a href="image-converter.html" class="tool-card-link">
+                        <a href="image_converter.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sync-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Converter</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Convert images between various formats.</p>
@@ -461,7 +450,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image compress optimize reduce size quality">
-                        <a href="#" class="tool-card-link">
+                        <a href="image_compressor.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Compressor</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Reduce image file size without losing quality.</p>
@@ -469,7 +458,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image resize dimensions scale enlarge shrink">
-                        <a href="#" class="tool-card-link">
+                        <a href="image_resizer.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-expand-arrows-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Resizer</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Adjust image dimensions quickly.</p>
@@ -477,7 +466,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image crop cut trim selection">
-                        <a href="#" class="tool-card-link">
+                        <a href="image_cropper.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-crop-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Cropper</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Crop images to your desired area.</p>
@@ -485,7 +474,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image to text ocr extract text from image scan">
-                        <a href="#" class="tool-card-link">
+                        <a href="image_ocr.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-image"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image to Text (OCR)</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Extract text from images using OCR.</p>
@@ -493,7 +482,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image optimize web performance speed quality">
-                        <a href="#" class="tool-card-link">
+                        <a href="image_optimizer.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-tachometer-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Optimizer</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Optimize images for faster web loading.</p>
@@ -501,7 +490,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="favicon generator website icon browser tab">
-                        <a href="#" class="tool-card-link">
+                        <a href="favicon_generator.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-star"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Favicon Generator</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Create favicons for your website.</p>
@@ -600,7 +589,7 @@
                 <p class="text-gray-600 mb-6">Enhance and analyze your text content.</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text case converter uppercase lowercase capitalize toggle">
-                        <a href="#" class="tool-card-link">
+                        <a href="text_case_converter.html" class="tool-card-link">
                             <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-text-height"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Case Converter</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Change text to uppercase, lowercase, etc.</p>
@@ -649,7 +638,7 @@
                     </div>
                     <!-- LLM Tool: Text Summarizer -->
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text summarizer summarize content ai llm gemini">
-                        <a href="#" class="tool-card-link" data-llm-tool="summarizer">
+                        <a href="text_summarizer.html" class="tool-card-link" data-llm-tool="summarizer">
                             <div class="text-4xl text-soft-green mb-4 text-center">✨<i class="fas fa-file-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Summarizer ✨</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Get concise summaries of long texts.</p>
@@ -821,7 +810,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="meta tag analyzer seo title description">
-                        <a href="#" class="tool-card-link" data-llm-tool="meta-description-generator">
+                        <a href="meta_description_generator.html" class="tool-card-link" data-llm-tool="meta-description-generator">
                             <div class="text-4xl text-soft-blue mb-4 text-center">✨<i class="fas fa-tags"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Meta Description Generator</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Analyze meta tags for SEO optimization.</p>

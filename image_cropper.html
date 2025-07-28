@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Cropper - webflowy</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff, #e0f7fa, #f0f4ff); /* Soft background */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333333;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%238A2BE2" stroke="%238A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="8"></circle></svg>') 10 10, auto;
+        }
+        .tool-container {
+            background-color: #FFFFFF;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .custom-file-upload {
+            border: 2px dashed #ADD8E6; /* Soft blue border */
+            padding: 20px;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+            max-width: 300px; /* Limit width for better appearance */
+            height: 150px;
+        }
+        .custom-file-upload:hover {
+            border-color: #8A2BE2; /* Accent dark purple */
+            background-color: #F0F4FF; /* Lighter background on hover */
+        }
+        .btn-primary {
+            background-color: #8A2BE2; /* Accent dark purple */
+            color: white;
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #6A1B9A; /* Darker accent */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .btn-secondary {
+            background-color: #ADD8E6; /* Soft blue */
+            color: #333333;
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-secondary:hover {
+            background-color: #87CEEB; /* Darker soft blue */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8A2BE2; /* Accent dark purple */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #imageContainer {
+            position: relative;
+            max-width: 100%;
+            margin: 1rem auto;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 0.5rem;
+            overflow: hidden; /* Important for preventing selection box overflow */
+            display: inline-block; /* To wrap around the image */
+            line-height: 0; /* Remove extra space below image */
+            touch-action: none; /* Prevent browser default touch actions like scrolling/zooming */
+        }
+        #imageContainer img {
+            display: block; /* Remove extra space below image */
+            max-width: 100%;
+            height: auto;
+        }
+        #selectionBox {
+            position: absolute;
+            border: 2px dashed #FF0000; /* Red dashed border for selection */
+            background-color: rgba(255, 0, 0, 0.1); /* Semi-transparent red overlay */
+            cursor: grab;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+            touch-action: none; /* Prevent browser default touch actions */
+        }
+        #selectionBox.resizing {
+            cursor: grabbing;
+        }
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FF0000;
+            border: 1px solid white;
+            border-radius: 50%;
+            z-index: 10;
+            touch-action: none; /* Prevent browser default touch actions */
+        }
+        .top-left { top: -5px; left: -5px; cursor: nwse-resize; }
+        .top-right { top: -5px; right: -5px; cursor: nesw-resize; }
+        .bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
+        .bottom-right { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+        /* Interactive cursor for hoverable elements */
+        button, a, input[type="submit"], input[type="button"], .custom-file-upload, select, label[for="rectCrop"], label[for="circleCrop"], label[for="bgRemove"] {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%23FF69B4" stroke="%23FF69B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="8"></circle></svg>') 10 10, pointer;
+        }
+        /* Style for selected radio button label */
+        input[type="radio"]:checked + label {
+            background-color: #8A2BE2;
+            color: white;
+            border-color: #8A2BE2;
+        }
+    </style>
+</head>
+<body>
+    <div class="tool-container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Image Cropper</h1>
+        <p class="text-gray-600 mb-6">Upload an image and drag a selection box to crop it.</p>
+
+        <div class="mb-6">
+            <label for="imageUpload" class="custom-file-upload">
+                <i class="fas fa-cloud-upload-alt text-4xl text-soft-blue mb-2"></i>
+                <p class="text-gray-700">Click to upload image</p>
+            </label>
+            <input type="file" id="imageUpload" accept="image/*">
+            
+            <div id="imageContainer" class="hidden">
+                <img id="uploadedImage" alt="Uploaded Image">
+                <div id="selectionBox">
+                    <div class="resize-handle top-left"></div>
+                    <div class="resize-handle top-right"></div>
+                    <div class="resize-handle bottom-left"></div>
+                    <div class="resize-handle bottom-right"></div>
+                </div>
+            </div>
+            <p id="fileName" class="text-sm text-gray-500 mt-2"></p>
+        </div>
+
+        <div class="mb-6 flex flex-wrap justify-center gap-4">
+            <input type="radio" id="rectCrop" name="cropShape" value="rectangle" checked class="hidden">
+            <label for="rectCrop" class="px-4 py-2 rounded-full border border-gray-300 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 transition-colors duration-200">
+                <i class="fas fa-square mr-2"></i> Rectangle Crop
+            </label>
+            <input type="radio" id="circleCrop" name="cropShape" value="circle" class="hidden">
+            <label for="circleCrop" class="px-4 py-2 rounded-full border border-gray-300 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 transition-colors duration-200">
+                <i class="fas fa-circle mr-2"></i> Circle Crop
+            </label>
+            <!-- Placeholder for Background Remover -->
+            <button id="bgRemovePlaceholder" class="px-4 py-2 rounded-full border border-gray-300 cursor-not-allowed text-gray-500 font-medium bg-gray-100 opacity-70" disabled title="Requires advanced AI API (not implemented client-side)">
+                <i class="fas fa-cut mr-2"></i> Background & Object Remover
+            </button>
+        </div>
+
+        <button id="cropButton" class="btn-primary" disabled>
+            Crop Image
+        </button>
+
+        <div id="loadingSpinner" class="loading-spinner hidden"></div>
+
+        <div id="downloadContainer" class="mt-8 hidden">
+            <p class="text-gray-600 mb-3">Your cropped image is ready!</p>
+            <button id="downloadButton" class="btn-secondary">
+                <i class="fas fa-download mr-2"></i> Download Cropped Image
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const imageContainer = document.getElementById('imageContainer');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const selectionBox = document.getElementById('selectionBox');
+        const fileNameDisplay = document.getElementById('fileName');
+        const cropButton = document.getElementById('cropButton');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const downloadContainer = document.getElementById('downloadContainer');
+        const downloadButton = document.getElementById('downloadButton');
+        const rectCropRadio = document.getElementById('rectCrop');
+        const circleCropRadio = document.getElementById('circleCrop');
+        const bgRemovePlaceholder = document.getElementById('bgRemovePlaceholder'); // New placeholder button
+
+        let originalImage = null; // Stores the loaded image object
+        let isDragging = false;
+        let isResizing = false;
+        let startX, startY;
+        let startWidth, startHeight;
+        let activeHandle = null;
+        let animationFrameId = null; // For requestAnimationFrame
+        let currentCropShape = 'rectangle'; // 'rectangle' or 'circle'
+
+        // Helper to get coordinates from mouse or touch event
+        function getCoords(e) {
+            if (e.touches && e.touches.length > 0) {
+                return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+            }
+            return { clientX: e.clientX, clientY: e.clientY };
+        }
+
+        // Handle image upload
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                fileNameDisplay.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.onload = () => {
+                        imageContainer.classList.remove('hidden');
+                        originalImage = uploadedImage; // Reference to the actual img element
+                        
+                        // Initialize selection box to full image size
+                        resetSelectionBox();
+
+                        cropButton.disabled = false;
+                        cropButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    };
+                };
+                reader.readAsDataURL(file);
+                downloadContainer.classList.add('hidden');
+                cropButton.disabled = true;
+                cropButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                fileNameDisplay.textContent = '';
+                imageContainer.classList.add('hidden');
+                originalImage = null;
+                cropButton.disabled = true;
+                cropButton.classList.add('opacity-50', 'cursor-not-allowed');
+                downloadContainer.classList.add('hidden');
+            }
+        });
+
+        function resetSelectionBox() {
+            if (!originalImage) return;
+            selectionBox.style.width = originalImage.offsetWidth + 'px';
+            selectionBox.style.height = originalImage.offsetHeight + 'px';
+            selectionBox.style.left = '0px';
+            selectionBox.style.top = '0px';
+            selectionBox.style.display = 'block';
+            if (currentCropShape === 'circle') {
+                makeSelectionBoxSquare();
+            }
+        }
+
+        function makeSelectionBoxSquare() {
+            if (!originalImage) return;
+            const size = Math.min(selectionBox.offsetWidth, selectionBox.offsetHeight);
+            selectionBox.style.width = size + 'px';
+            selectionBox.style.height = size + 'px';
+            // Center the square if it was rectangular
+            const currentLeft = parseFloat(selectionBox.style.left);
+            const currentTop = parseFloat(selectionBox.style.top);
+            const currentWidth = parseFloat(selectionBox.style.width);
+            const currentHeight = parseFloat(selectionBox.style.height);
+
+            const imageWidth = originalImage.offsetWidth;
+            const imageHeight = originalImage.offsetHeight;
+
+            let newLeft = currentLeft;
+            let newTop = currentTop;
+
+            if (currentWidth !== currentHeight) {
+                if (currentWidth > currentHeight) { // Was wider, adjust width to height
+                    newLeft = currentLeft + (currentWidth - size) / 2;
+                } else { // Was taller, adjust height to width
+                    newTop = currentTop + (currentHeight - size) / 2;
+                }
+            }
+            
+            // Ensure it stays within bounds after making square
+            newLeft = Math.max(0, Math.min(newLeft, imageWidth - size));
+            newTop = Math.max(0, Math.min(newTop, imageHeight - size));
+
+            selectionBox.style.left = newLeft + 'px';
+            selectionBox.style.top = newTop + 'px';
+        }
+
+
+        // Mouse/Touch down event for dragging and resizing
+        selectionBox.addEventListener('mousedown', handleStart);
+        selectionBox.addEventListener('touchstart', handleStart);
+
+        function handleStart(e) {
+            e.preventDefault(); // Prevent default drag/scroll behavior
+            const coords = getCoords(e);
+            const target = e.target;
+
+            if (target.classList.contains('resize-handle')) {
+                isResizing = true;
+                activeHandle = target.classList[1]; // e.g., 'top-left'
+            } else {
+                isDragging = true;
+            }
+
+            startX = coords.clientX;
+            startY = coords.clientY;
+            startWidth = parseFloat(getComputedStyle(selectionBox).width);
+            startHeight = parseFloat(getComputedStyle(selectionBox).height);
+            
+            selectionBox.style.cursor = isDragging ? 'grabbing' : activeHandle; // Change cursor
+            selectionBox.classList.add('resizing'); // Add class to indicate resizing/dragging
+
+            // Attach move and end listeners to the document to handle drags outside the box
+            document.addEventListener('mousemove', handleMove);
+            document.addEventListener('mouseup', handleEnd);
+            document.addEventListener('touchmove', handleMove, { passive: false }); // passive: false for preventDefault
+            document.addEventListener('touchend', handleEnd);
+        }
+
+        // Mouse/Touch move event for dragging and resizing
+        function handleMove(e) {
+            if (!isDragging && !isResizing) return;
+            e.preventDefault(); // Prevent scrolling while dragging/resizing
+
+            const coords = getCoords(e);
+            const dx = coords.clientX - startX;
+            const dy = coords.clientY - startY;
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            animationFrameId = requestAnimationFrame(() => {
+                const containerRect = imageContainer.getBoundingClientRect();
+
+                if (isDragging) {
+                    let newLeft = selectionBox.offsetLeft + dx;
+                    let newTop = selectionBox.offsetTop + dy;
+
+                    // Boundary checks for dragging
+                    newLeft = Math.max(0, Math.min(newLeft, containerRect.width - selectionBox.offsetWidth));
+                    newTop = Math.max(0, Math.min(newTop, containerRect.height - selectionBox.offsetHeight));
+
+                    selectionBox.style.left = newLeft + 'px';
+                    selectionBox.style.top = newTop + 'px';
+                    startX = coords.clientX; // Update startX/Y for continuous dragging
+                    startY = coords.clientY;
+                } else if (isResizing) {
+                    let newBoxLeft = selectionBox.offsetLeft;
+                    let newBoxTop = selectionBox.offsetTop;
+                    let newBoxWidth = startWidth;
+                    let newBoxHeight = startHeight;
+
+                    switch (activeHandle) {
+                        case 'top-left':
+                            newBoxWidth = startWidth - dx;
+                            newBoxHeight = startHeight - dy;
+                            newBoxLeft = selectionBox.offsetLeft + dx;
+                            newBoxTop = selectionBox.offsetTop + dy;
+                            break;
+                        case 'top-right':
+                            newBoxWidth = startWidth + dx;
+                            newBoxHeight = startHeight - dy;
+                            newBoxTop = selectionBox.offsetTop + dy;
+                            break;
+                        case 'bottom-left':
+                            newBoxWidth = startWidth - dx;
+                            newBoxHeight = startHeight + dy;
+                            newBoxLeft = selectionBox.offsetLeft + dx;
+                            break;
+                        case 'bottom-right':
+                            newBoxWidth = startWidth + dx;
+                            newBoxHeight = startHeight + dy;
+                            break;
+                    }
+
+                    // Ensure minimum size
+                    newBoxWidth = Math.max(20, newBoxWidth);
+                    newBoxHeight = Math.max(20, newBoxHeight);
+
+                    // For circle crop, force square selection
+                    if (currentCropShape === 'circle') {
+                        const minDim = Math.min(newBoxWidth, newBoxHeight);
+                        newBoxWidth = minDim;
+                        newBoxHeight = minDim;
+                    }
+
+                    // Re-calculate left/top if width/height changed and it's a top/left handle
+                    if (activeHandle.includes('left')) {
+                        newBoxLeft = startX + (startWidth - newBoxWidth) - containerRect.left;
+                    }
+                    if (activeHandle.includes('top')) {
+                        newBoxTop = startY + (startHeight - newBoxHeight) - containerRect.top;
+                    }
+
+                    // Final boundary checks after resizing
+                    newBoxLeft = Math.max(0, Math.min(newBoxLeft, containerRect.width - newBoxWidth));
+                    newBoxTop = Math.max(0, Math.min(newBoxTop, containerRect.height - newBoxTop)); /* Corrected to newBoxTop */
+                    newBoxWidth = Math.min(newBoxWidth, containerRect.width - newBoxLeft);
+                    newBoxHeight = Math.min(newBoxHeight, containerRect.height - newBoxTop);
+
+
+                    selectionBox.style.width = newBoxWidth + 'px';
+                    selectionBox.style.height = newBoxHeight + 'px';
+                    selectionBox.style.left = newBoxLeft + 'px';
+                    selectionBox.style.top = newBoxTop + 'px';
+
+                    // Update startX/Y and startWidth/Height for next frame of resizing
+                    startX = coords.clientX;
+                    startY = coords.clientY;
+                    startWidth = parseFloat(getComputedStyle(selectionBox).width);
+                    startHeight = parseFloat(getComputedStyle(selectionBox).height);
+                }
+            });
+        }
+
+        // Mouse/Touch up event to stop dragging/resizing
+        function handleEnd() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            isDragging = false;
+            isResizing = false;
+            activeHandle = null;
+            selectionBox.style.cursor = 'grab'; // Reset cursor
+            selectionBox.classList.remove('resizing');
+
+            // Detach event listeners from document
+            document.removeEventListener('mousemove', handleMove);
+            document.removeEventListener('mouseup', handleEnd);
+            document.removeEventListener('touchmove', handleMove);
+            document.removeEventListener('touchend', handleEnd);
+        }
+
+        // Handle crop shape change
+        rectCropRadio.addEventListener('change', () => {
+            currentCropShape = 'rectangle';
+            selectionBox.style.borderRadius = '0'; // Reset border radius
+            resetSelectionBox(); // Re-initialize selection to full image
+        });
+
+        circleCropRadio.addEventListener('change', () => {
+            currentCropShape = 'circle';
+            selectionBox.style.borderRadius = '50%'; // Make selection box circular visually
+            makeSelectionBoxSquare(); // Force selection to be square
+        });
+
+
+        // Handle image cropping
+        cropButton.addEventListener('click', () => {
+            if (!originalImage || selectionBox.offsetWidth === 0 || selectionBox.offsetHeight === 0) {
+                alertMessage('Please upload an image and make a valid selection.');
+                return;
+            }
+
+            loadingSpinner.classList.remove('hidden');
+            cropButton.disabled = true;
+            cropButton.classList.add('opacity-50', 'cursor-not-allowed');
+            downloadContainer.classList.add('hidden');
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Calculate actual crop dimensions based on image's natural size vs displayed size
+            const scaleX = originalImage.naturalWidth / originalImage.offsetWidth;
+            const scaleY = originalImage.naturalHeight / originalImage.offsetHeight;
+
+            const cropX = selectionBox.offsetLeft * scaleX;
+            const cropY = selectionBox.offsetTop * scaleY;
+            let cropWidth = selectionBox.offsetWidth * scaleX;
+            let cropHeight = selectionBox.offsetHeight * scaleY;
+
+            // For circular crop, ensure canvas is square and draw within a circle
+            if (currentCropShape === 'circle') {
+                const diameter = Math.min(cropWidth, cropHeight);
+                canvas.width = diameter;
+                canvas.height = diameter;
+                ctx.beginPath();
+                ctx.arc(diameter / 2, diameter / 2, diameter / 2, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip(); // Clip to circle
+                ctx.drawImage(
+                    originalImage,
+                    cropX,
+                    cropY,
+                    cropWidth,
+                    cropHeight,
+                    0,
+                    0,
+                    diameter, // Draw to fit the square canvas
+                    diameter
+                );
+            } else {
+                canvas.width = cropWidth;
+                canvas.height = cropHeight;
+                ctx.drawImage(
+                    originalImage,
+                    cropX,
+                    cropY,
+                    cropWidth,
+                    cropHeight,
+                    0,
+                    0,
+                    cropWidth,
+                    cropHeight
+                );
+            }
+
+            try {
+                const croppedDataUrl = canvas.toDataURL('image/png'); // Preserve quality
+
+                downloadButton.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = croppedDataUrl;
+                    const originalFileName = fileNameDisplay.textContent.split('.').slice(0, -1).join('.');
+                    a.download = `${originalFileName}_cropped_${currentCropShape}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    alertMessage('Image downloaded successfully!');
+                };
+
+                loadingSpinner.classList.add('hidden');
+                cropButton.disabled = false;
+                cropButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                downloadContainer.classList.remove('hidden');
+                alertMessage('Image cropping complete!');
+            } catch (error) {
+                console.error("Error cropping image:", error);
+                alertMessage('Error cropping image. Please try again.');
+                loadingSpinner.classList.add('hidden');
+                cropButton.disabled = false;
+                cropButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        // Simple alert message function (since we cannot use window.alert)
+        function alertMessage(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.textContent = message;
+            alertDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #333;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1001;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.style.opacity = '1';
+            }, 10);
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                alertDiv.addEventListener('transitionend', () => alertDiv.remove());
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webflowy - Your Daily Tools, All in One Place</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #333333; /* Dark grey for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scroll from blob animation */
+            position: relative;
+            background: linear-gradient(135deg, #f0f9ff, #e0f7fa, #f0f4ff); /* Soft initial gradient */
+            background-size: 300% 300%;
+            animation: gradientAnimation 15s ease infinite alternate;
+        }
+
+        /* Custom Color Palette */
+        :root {
+            --color-soft-purple: #C8A2C8;
+            --color-soft-pink: #FFC0CB;
+            --color-soft-blue: #ADD8E6;
+            --color-soft-green: #90EE90;
+            --color-dark-text: #333333;
+            --color-light-bg: #FFFFFF;
+            --color-accent-dark: #8A2BE2; /* Darker purple for accents */
+            --color-logo-dark: #1A202C; /* Very dark color for logo for contrast */
+        }
+        .bg-soft-purple { background-color: var(--color-soft-purple); }
+        .text-soft-purple { color: var(--color-soft-purple); }
+        .bg-soft-pink { background-color: var(--color-soft-pink); }
+        .text-soft-pink { color: var(--color-soft-pink); }
+        .bg-soft-blue { background-color: var(--color-soft-blue); }
+        .text-soft-blue { color: var(--color-soft-blue); }
+        .bg-soft-green { background-color: var(--color-soft-green); }
+        .text-soft-green { color: var(--color-soft-green); }
+        .bg-light-bg { background-color: var(--color-light-bg); }
+        .text-dark-text { color: var(--color-dark-text); }
+        .bg-accent-dark { background-color: var(--color-accent-dark); }
+        .hover\:bg-accent-dark:hover { background-color: var(--color-accent-dark); }
+        .text-logo-dark { color: var(--color-logo-dark); } /* Apply new logo color */
+
+
+        /* Animated Background Blobs */
+        .blob-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            filter: blur(80px); /* Increased blur */
+            animation: blobMove 20s infinite alternate;
+        }
+
+        .blob-1 { background-color: var(--color-soft-purple); width: 300px; height: 300px; top: 10%; left: 10%; animation-delay: 0s; }
+        .blob-2 { background-color: var(--color-soft-pink); width: 400px; height: 400px; top: 60%; left: 70%; animation-delay: 5s; }
+        .blob-3 { background-color: var(--color-soft-blue); width: 350px; height: 350px; top: 30%; left: -5%; animation-delay: 10s; }
+        .blob-4 { background-color: var(--color-soft-green); width: 250px; height: 250px; top: 80%; left: 20%; animation-delay: 15s; }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20%, -10%) scale(1.1); }
+            50% { transform: translate(0, 20%) scale(0.9); }
+            75% { transform: translate(-20%, -10%) scale(1.2); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-accent-dark); /* Use accent color for scrollbar */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6A1B9A; /* Darker accent on hover */
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-fade-in-delay { animation: fadeIn 0.8s ease-out 0.2s forwards; opacity: 0; }
+        .animate-fade-in-delay-2 { animation: fadeIn 0.8s ease-out 0.4s forwards; opacity: 0; }
+
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            }
+            0% { opacity: 0; transform: scale3d(.3, .3, .3); }
+            20% { transform: scale3d(1.1, 1.1, 1.1); }
+            40% { transform: scale3d(.9, .9, .9); }
+            60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+            80% { transform: scale3d(.97, .97, .97); }
+            100% { opacity: 1; transform: scale3d(1, 1, 1); }
+        }
+        .animate-bounce-in { animation: bounceIn 0.8s ease-out forwards; opacity: 0; }
+
+        /* Tool Card specific styles for full clickability and animation */
+        .tool-card-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none; /* Remove underline from link */
+            color: inherit; /* Inherit text color */
+        }
+        .tool-card {
+            display: block; /* Default display for tool cards, allows it to be part of grid flow */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Enable transitions for these properties */
+        }
+
+        /* For scroll-to-top button */
+        #scroll-to-top {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+        }
+        #scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Category button active state and hover/active effects */
+        .category-filter-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .category-filter-button:active {
+            transform: scale(0.95);
+        }
+        .category-filter-button:hover {
+            transform: translateY(-2px) scale(1.02); /* Subtle lift and slight scale on hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add shadow on hover */
+        }
+        .category-filter-button.active-category { /* New class for active category button */
+            background-color: var(--color-accent-dark);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: scale(1.02);
+        }
+
+        /* CSS Blob in Hero Section */
+        .hero-blob {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, var(--color-soft-purple), var(--color-soft-pink));
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.7;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: heroBlobAnimation 10s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes heroBlobAnimation {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            25% { transform: translate(-45%, -55%) scale(1.1) rotate(10deg); }
+            50% { transform: translate(-50%, -50%) scale(0.9) rotate(0deg); }
+            75% { transform: translate(-55%, -45%) scale(1.15) rotate(-10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 700px;
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            position: relative;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+        .modal-loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--color-accent-dark);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 0; /* Remove padding on body for full screen on mobile */
+            }
+            .main-container {
+                border-radius: 0; /* No rounded corners on mobile for full screen */
+                box-shadow: none; /* No shadow on mobile */
+                min-height: 100vh; /* Full height on mobile */
+            }
+            .hero-blob {
+                width: 150px;
+                height: 150px;
+                filter: blur(40px);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Animated Background Blobs -->
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-container relative w-full min-h-screen bg-light-bg shadow-lg rounded-2xl md:rounded-3xl overflow-hidden flex flex-col z-10">
+
+        <!-- Top Header Navigation -->
+        <header class="bg-light-bg shadow-sm py-4 sticky top-0 z-50">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <!-- Logo (Plain Text with improved contrast) -->
+                <a href="#" class="text-2xl font-bold text-logo-dark">webflowy</a>
+
+                <!-- Navigation Links (Desktop) -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-accent-dark font-medium transition-colors duration-200">Home</a>
+                    <a href="#tools-section" class="text-gray-700 hover:text-accent-dark font-medium transition-colors duration-200">Tools</a>
+                    <a href="mailto:solarcrown133@gmail.com" class="text-gray-700 hover:text-accent-dark font-medium transition-colors duration-200">Contact</a>
+                </nav>
+
+                <!-- Hamburger Menu (Mobile) -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Overlay -->
+            <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-light-bg bg-opacity-95 z-40 flex flex-col items-center justify-center space-y-6">
+                <button id="close-mobile-menu" class="absolute top-4 right-4 text-gray-700 focus:outline-none">
+                    <i class="fas fa-times text-3xl"></i>
+                </button>
+                <a href="#" class="text-3xl text-dark-text hover:text-accent-dark font-semibold transition-colors duration-200">Home</a>
+                <a href="#tools-section" class="text-3xl text-dark-text hover:text-accent-dark font-semibold transition-colors duration-200">Tools</a>
+                <a href="mailto:solarcrown133@gmail.com" class="text-3xl text-dark-text hover:text-accent-dark font-semibold transition-colors duration-200">Contact</a>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative py-20 text-center overflow-hidden bg-light-blue bg-opacity-50">
+            <!-- Hero Blob -->
+            <div class="hero-blob"></div>
+
+            <div class="container mx-auto px-4 relative z-10">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-dark-text leading-tight mb-4 animate-fade-in">
+                    Your Daily Tools, All in One Place
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-700 mb-8 max-w-3xl mx-auto animate-fade-in-delay">
+                    Convert, calculate, compress, and simplify your everyday tasks — fast and free.
+                </p>
+
+                <!-- Illustration/Icons -->
+                <div class="flex justify-center items-center space-x-6 mb-10 animate-fade-in-delay-2">
+                    <i class="fas fa-image text-4xl text-soft-purple"></i>
+                    <i class="fas fa-file-alt text-4xl text-soft-pink"></i>
+                    <i class="fas fa-calculator text-4xl text-soft-blue"></i>
+                    <i class="fas fa-font text-4xl text-soft-green"></i>
+                    <i class="fas fa-code text-4xl text-soft-purple"></i>
+                    <i class="fas fa-palette text-4xl text-soft-pink"></i>
+                    <i class="fas fa-chart-line text-4xl text-soft-blue"></i>
+                    <i class="fas fa-wrench text-4xl text-soft-green"></i>
+                </div>
+
+                <!-- CTA Button -->
+                <a href="#tools-section" class="inline-block bg-accent-dark text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 animate-bounce-in">
+                    Explore Tools
+                </a>
+            </div>
+        </section>
+
+        <!-- Search Bar -->
+        <section class="py-10 bg-light-bg shadow-md -mt-8 relative z-10 rounded-lg mx-4 sm:mx-auto max-w-4xl">
+            <div class="container mx-auto px-4">
+                <div class="relative">
+                    <input type="text" id="tool-search" placeholder="Search a tool by name or keyword..." class="w-full py-4 pl-12 pr-4 rounded-full border-2 border-soft-blue focus:outline-none focus:ring-2 focus:ring-accent-dark text-lg shadow-inner">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl"></i>
+                </div>
+                <p id="no-results-message" class="text-center text-red-500 mt-4 hidden">No tools found matching your search.</p>
+            </div>
+        </section>
+
+        <!-- Tool Sections -->
+        <main id="tools-section" class="container mx-auto px-4 py-12 flex-grow">
+
+            <!-- Category Filters -->
+            <div class="flex justify-center flex-wrap gap-3 mb-8">
+                <button class="category-filter-button px-6 py-3 rounded-full bg-accent-dark text-white font-semibold shadow-md hover:opacity-90 hover:scale-105 transition-all duration-200" data-category="all">All Tools</button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="image">
+                    <i class="fas fa-image mr-2"></i> Image Tools
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="document">
+                    <i class="fas fa-file-alt mr-2"></i> Document Tools
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="calculator">
+                    <i class="fas fa-calculator mr-2"></i> Calculator & Converter
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="text">
+                    <i class="fas fa-font mr-2"></i> Text & Content Tools
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="developer">
+                    <i class="fas fa-code mr-2"></i> Web & Developer Tools
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="design">
+                    <i class="fas fa-palette mr-2"></i> Design & Color Tools
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="seo">
+                    <i class="fas fa-chart-line mr-2"></i> SEO & Marketing Tools
+                </button>
+                <button class="category-filter-button px-6 py-3 rounded-full bg-light-bg text-dark-text font-semibold shadow-md hover:bg-soft-blue hover:scale-105 transition-all duration-200" data-category="utility">
+                    <i class="fas fa-wrench mr-2"></i> General Utility Tools
+                </button>
+            </div>
+
+            <!-- All Tools Container -->
+            <div id="all-tools-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+                <!-- Image Tools -->
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="image convert jpg png webp gif resize compress crop ocr text rotate flip optimize favicon generator">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sync-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert images between various formats.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="image compress optimize reduce size quality">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Compressor</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Reduce image file size without losing quality.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="image resize dimensions scale enlarge shrink">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-expand-arrows-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Resizer</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Adjust image dimensions quickly.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="image crop cut trim selection">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-crop-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Cropper</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Crop images to your desired area.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="image to text ocr extract text from image scan">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-image"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image to Text (OCR)</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Extract text from images using OCR.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="image optimize web performance speed quality">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-tachometer-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Optimizer</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Optimize images for faster web loading.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="image" data-keywords="favicon generator website icon browser tab">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-star"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Favicon Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Create favicons for your website.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="document" data-keywords="pdf word doc convert to from">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-file-pdf"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF to Word / Word to PDF</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert documents between PDF and Word.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="document" data-keywords="pdf compress reduce size quality">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-compress"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF Compressor</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Reduce the file size of your PDFs.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="document" data-keywords="pdf merge split combine separate">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-object-group"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF Merger & Splitter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Combine or split PDF documents.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="document" data-keywords="document converter docx xlsx pptx txt html">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-exchange-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Document Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert various document formats.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="calculator" data-keywords="currency converter exchange rates money">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-dollar-sign"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Currency Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert between different currencies.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="calculator" data-keywords="unit converter length weight volume temperature">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-ruler-combined"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Unit Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert various units of measurement.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="calculator" data-keywords="time zone converter gmt utc local time">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-globe"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Time Zone Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert times across different time zones.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="calculator" data-keywords="date difference calculator days months years">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-calendar-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Date Difference Calculator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Calculate the difference between two dates.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="text case converter uppercase lowercase capitalize toggle">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-text-height"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Case Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Change text to uppercase, lowercase, etc.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="word character counter count text">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-sort-numeric-up-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Word & Character Counter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Count words and characters in your text.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="remove duplicate lines text unique">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-minus-circle"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Remove Duplicate Lines</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Clean up text by removing duplicate lines.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="text sorter alphabetize sort lines">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-sort-alpha-down"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Sorter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Sort lines of text alphabetically or numerically.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="readability checker content analysis writing score">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-book-reader"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Readability Checker</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Analyze text for readability and complexity.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="plagiarism checker content originality unique">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-copy"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Plagiarism Checker</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Check content for originality and plagiarism.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <!-- New LLM Tool: Text Summarizer -->
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="text" data-keywords="text summarizer summarize content ai llm gemini">
+                    <a href="#" class="tool-card-link" data-llm-tool="summarizer">
+                        <div class="text-4xl text-soft-green mb-4 text-center">✨<i class="fas fa-file-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Summarizer ✨</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Get concise summaries of long texts.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="html css js minifier compress code">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress-alt"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HTML/CSS/JS Minifier</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Minify your web code for faster loading.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="json formatter validator beautify parse">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-brackets-curly"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">JSON Formatter & Validator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Format and validate JSON data.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="base64 encoder decoder convert">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-lock"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Base64 Encoder/Decoder</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Encode and decode Base64 strings.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="url encoder decoder percent encode decode">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-link"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">URL Encoder/Decoder</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Encode and decode URL components.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="regex tester regular expression match">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-code"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Regex Tester</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Test and debug regular expressions.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="markdown html converter md to html">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fab fa-markdown"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Markdown to HTML Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert Markdown text to HTML.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="code formatter beautify js html css json xml">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-indent"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Code Formatter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Beautify and format various code types.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="sitemap generator xml sitemap seo">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sitemap"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Sitemap Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Generate XML sitemaps for SEO.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="robots txt generator seo crawl">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-robot"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Robots.txt Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Create or test your robots.txt file.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="htaccess generator server config redirect">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-server"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HTACCESS Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Generate common .htaccess rules.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <!-- New LLM Tool: Code Explainer -->
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="code explainer explain code ai llm gemini">
+                    <a href="#" class="tool-card-link" data-llm-tool="code-explainer">
+                        <div class="text-4xl text-soft-purple mb-4 text-center">✨<i class="fas fa-code"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Code Explainer ✨</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Get clear explanations for code snippets.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="design" data-keywords="color picker from image extract colors">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-eye-dropper"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Color Picker from Image</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Extract colors directly from an image.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="design" data-keywords="hex rgb converter color codes">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-hashtag"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HEX to RGB Converter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Convert color codes between HEX and RGB.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="design" data-keywords="gradient generator css background colors">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-fill-drip"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Gradient Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Create beautiful CSS color gradients.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="design" data-keywords="contrast checker accessibility wcag">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-adjust"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Contrast Checker</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Check color contrast for web accessibility.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="design" data-keywords="palette generator color scheme harmony">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-swatchbook"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Palette Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Generate harmonious color palettes.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="seo" data-keywords="keyword density checker seo analysis">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-key"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Keyword Density Checker</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Analyze keyword density of your content.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="seo" data-keywords="meta tag analyzer seo title description">
+                    <a href="#" class="tool-card-link" data-llm-tool="meta-description-generator">
+                        <div class="text-4xl text-soft-blue mb-4 text-center">✨<i class="fas fa-tags"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Meta Tag Analyzer</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Analyze meta tags for SEO optimization.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="seo" data-keywords="word counter text seo content">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-spell-check"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Word Counter</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Count words in your content for SEO.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="seo" data-keywords="url shortener link shorten share">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-cut"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">URL Shortener</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Shorten long URLs for easy sharing.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="utility" data-keywords="qr code generator scanner create read">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-qrcode"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">QR Code Generator & Scanner</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Create and scan QR codes.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="utility" data-keywords="barcode generator create scan">
+                    <a href="#" class="tool-card-link">
+                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-barcode"></i></div>
+                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Barcode Generator</h3>
+                        <p class="text-gray-600 text-sm mb-4 text-center">Generate various types of barcodes.</p>
+                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                    </a>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bg-dark-text text-white py-10 mt-12">
+            <div class="container mx-auto px-4 text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-soft-blue mb-2">webflowy</h3>
+                    <p class="text-gray-400">Simplifying your digital life.</p>
+                </div>
+                <div class="mb-6">
+                    <a href="mailto:solarcrown133@gmail.com" class="text-gray-300 hover:text-soft-blue transition-colors duration-200">solarcrown133@gmail.com</a>
+                </div>
+                <div class="space-x-4 text-sm">
+                    <a href="#" class="text-gray-300 hover:text-soft-blue transition-colors duration-200">Privacy Policy</a>
+                    <a href="#" class="text-gray-300 hover:text-soft-blue transition-colors duration-200">Terms of Use</a>
+                </div>
+                <p class="mt-6 text-gray-500 text-xs">&copy; 2025 webflowy. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Universal LLM Modal -->
+    <div id="llm-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="llm-modal-close">&times;</button>
+            <h2 class="text-2xl font-bold text-dark-text mb-4" id="llm-modal-title">LLM Tool</h2>
+            <p class="text-gray-600 mb-4" id="llm-modal-description"></p>
+            
+            <textarea id="llm-input-textarea" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent-dark mb-4" rows="6" placeholder="Enter text or code here..."></textarea>
+            
+            <button id="llm-generate-button" class="bg-accent-dark text-white font-semibold py-2 px-6 rounded-full shadow-md hover:opacity-90 transition-all duration-200">
+                Generate
+            </button>
+
+            <div id="llm-loading-spinner" class="modal-loading-spinner hidden"></div>
+
+            <div id="llm-output-container" class="mt-6 p-4 bg-gray-100 rounded-md border border-gray-200 hidden">
+                <h3 class="text-xl font-semibold text-dark-text mb-2">Output:</h3>
+                <pre id="llm-output-text" class="whitespace-pre-wrap font-mono text-sm text-gray-800"></pre>
+                <button id="llm-copy-button" class="mt-4 bg-soft-blue text-dark-text font-semibold py-2 px-4 rounded-md hover:opacity-90 transition-all duration-200">
+                    Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" class="fixed bottom-6 right-6 bg-accent-dark text-white p-4 rounded-full shadow-lg hover:opacity-90 transition-all duration-300 z-40">
+        <i class="fas fa-arrow-up text-xl"></i>
+    </button>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+        });
+
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore scrolling
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+        });
+
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Live Search and Category Filtering Functionality
+        const searchInput = document.getElementById('tool-search');
+        const toolCards = document.querySelectorAll('.tool-card');
+        const categoryButtons = document.querySelectorAll('.category-filter-button');
+        const noResultsMessage = document.getElementById('no-results-message');
+        const allToolsContainer = document.getElementById('all-tools-container');
+
+        let activeCategory = 'all'; // Default active category
+
+        // Function to filter tools based on category and search term
+        function filterTools() {
+            const searchTerm = searchInput.value.toLowerCase();
+            let visibleCards = [];
+            let hiddenCards = [];
+
+            toolCards.forEach(card => {
+                const toolName = card.querySelector('h3').textContent.toLowerCase();
+                const toolDescription = card.querySelector('p').textContent.toLowerCase();
+                const toolKeywords = card.dataset.keywords ? card.dataset.keywords.toLowerCase() : '';
+                const cardCategory = card.dataset.category;
+
+                const matchesSearch = toolName.includes(searchTerm) ||
+                                      toolDescription.includes(searchTerm) ||
+                                      toolKeywords.includes(searchTerm);
+
+                const matchesCategory = (activeCategory === 'all' || cardCategory === activeCategory);
+
+                if (matchesSearch && matchesCategory) {
+                    visibleCards.push(card);
+                } else {
+                    hiddenCards.push(card);
+                }
+            });
+
+            // Animate out hidden cards first
+            hiddenCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.pointerEvents = 'none';
+                card.style.transitionDelay = '0ms'; // No delay for hiding
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300); // Matches CSS transition duration
+            });
+
+            // Animate in visible cards with a staggered delay
+            let staggeredDelay = 0;
+            visibleCards.forEach(card => {
+                card.style.display = 'block'; // Make it visible in layout immediately
+                card.style.pointerEvents = 'auto';
+                card.style.opacity = '0'; // Reset for animation
+                card.style.transform = 'translateY(20px)'; // Reset for animation
+                card.style.transitionDelay = `${staggeredDelay}ms`;
+
+                // Force reflow to ensure initial state is applied before transition
+                void card.offsetWidth; 
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0px)';
+                }, 10); // Small delay to ensure transition triggers
+
+                staggeredDelay += 50;
+            });
+
+            if (visibleCards.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+            } else {
+                noResultsMessage.classList.add('hidden');
+            }
+        }
+
+        // Event listener for search input
+        searchInput.addEventListener('input', filterTools);
+
+        // Event listeners for category buttons
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active category
+                activeCategory = button.dataset.category;
+
+                // Update button styles
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active-category', 'bg-accent-dark', 'text-white');
+                    btn.classList.add('bg-light-bg', 'text-dark-text');
+                });
+                button.classList.add('active-category', 'bg-accent-dark', 'text-white');
+                button.classList.remove('bg-light-bg', 'text-dark-text');
+
+                filterTools(); // Re-filter based on new category
+            });
+        });
+
+        // Scroll-to-top button functionality
+        const scrollToTopButton = document.getElementById('scroll-to-top');
+        const mainContentArea = document.querySelector('.main-container'); // Scrollable element is now main-container
+
+        mainContentArea.addEventListener('scroll', () => {
+            if (mainContentArea.scrollTop > 300) { // Show button after scrolling 300px
+                scrollToTopButton.classList.add('show');
+            } else {
+                scrollToTopButton.classList.remove('show');
+            }
+        });
+
+        scrollToTopButton.addEventListener('click', () => {
+            mainContentArea.scrollTo({ // Scroll the specific element
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initial filter to show all tools on load
+        window.addEventListener('load', () => {
+            filterTools();
+        });
+
+
+        // LLM Modal Functionality
+        const llmModalOverlay = document.getElementById('llm-modal-overlay');
+        const llmModalCloseButton = document.getElementById('llm-modal-close');
+        const llmModalTitle = document.getElementById('llm-modal-title');
+        const llmModalDescription = document.getElementById('llm-modal-description');
+        const llmInputTextarea = document.getElementById('llm-input-textarea');
+        const llmGenerateButton = document.getElementById('llm-generate-button');
+        const llmLoadingSpinner = document.getElementById('llm-loading-spinner');
+        const llmOutputContainer = document.getElementById('llm-output-container');
+        const llmOutputText = document.getElementById('llm-output-text');
+        const llmCopyButton = document.getElementById('llm-copy-button');
+
+        let currentLLMTool = ''; // To store which LLM tool is active
+
+        // Function to open the LLM modal
+        function openLLMModal(toolType, title, description, placeholder) {
+            currentLLMTool = toolType;
+            llmModalTitle.textContent = title;
+            llmModalDescription.textContent = description;
+            llmInputTextarea.placeholder = placeholder;
+            llmInputTextarea.value = ''; // Clear previous input
+            llmOutputText.textContent = ''; // Clear previous output
+            llmOutputContainer.classList.add('hidden'); // Hide output container
+            llmLoadingSpinner.classList.add('hidden'); // Hide spinner
+            llmModalOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        // Function to close the LLM modal
+        function closeLLMModal() {
+            llmModalOverlay.classList.remove('show');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Event listener for closing modal
+        llmModalCloseButton.addEventListener('click', closeLLMModal);
+        llmModalOverlay.addEventListener('click', (e) => {
+            if (e.target === llmModalOverlay) {
+                closeLLMModal();
+            }
+        });
+
+        // Event listeners for LLM tool buttons
+        document.querySelectorAll('[data-llm-tool]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default link behavior
+                const toolType = button.dataset.llmTool;
+                let title = '';
+                let description = '';
+                let placeholder = '';
+
+                if (toolType === 'summarizer') {
+                    title = 'Text Summarizer';
+                    description = 'Enter a long piece of text below, and I will provide a concise summary.';
+                    placeholder = 'Paste your text here...';
+                } else if (toolType === 'meta-description-generator') {
+                    title = 'Meta Description Generator';
+                    description = 'Provide the main content or keywords for your page, and I will generate an SEO-friendly meta description.';
+                    placeholder = 'Enter page content or keywords...';
+                } else if (toolType === 'code-explainer') {
+                    title = 'Code Explainer';
+                    description = 'Paste any code snippet (e.g., JavaScript, Python, HTML) and I will explain what it does.';
+                    placeholder = 'Paste your code here...';
+                }
+
+                openLLMModal(toolType, title, description, placeholder);
+            });
+        });
+
+        // Function to call Gemini API
+        async function callGeminiAPI(prompt) {
+            llmLoadingSpinner.classList.remove('hidden');
+            llmGenerateButton.disabled = true; // Disable button during loading
+            llmOutputContainer.classList.add('hidden'); // Hide previous output
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas will automatically provide API key here
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    llmOutputText.textContent = text;
+                    llmOutputContainer.classList.remove('hidden');
+                } else {
+                    llmOutputText.textContent = 'No response generated. Please try again.';
+                    llmOutputContainer.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                llmOutputText.textContent = `Error: ${error.message}. Please try again.`;
+                llmOutputContainer.classList.remove('hidden');
+            } finally {
+                llmLoadingSpinner.classList.add('hidden');
+                llmGenerateButton.disabled = false; // Re-enable button
+            }
+        }
+
+        // Event listener for Generate button in modal
+        llmGenerateButton.addEventListener('click', () => {
+            const inputText = llmInputTextarea.value.trim();
+            if (!inputText) {
+                llmOutputText.textContent = 'Please enter some input to generate a response.';
+                llmOutputContainer.classList.remove('hidden');
+                return;
+            }
+
+            let prompt = '';
+            if (currentLLMTool === 'summarizer') {
+                prompt = `Summarize the following text concisely:\n\n${inputText}`;
+            } else if (currentLLMTool === 'meta-description-generator') {
+                prompt = `Generate an SEO-friendly meta description (under 160 characters) for a webpage with the following content/keywords:\n\n${inputText}`;
+            } else if (currentLLMTool === 'code-explainer') {
+                prompt = `Explain the following code snippet clearly and concisely:\n\n${inputText}`;
+            }
+
+            if (prompt) {
+                callGeminiAPI(prompt);
+            }
+        });
+
+        // Copy to Clipboard functionality
+        llmCopyButton.addEventListener('click', () => {
+            const textToCopy = llmOutputText.textContent;
+            if (textToCopy) {
+                // Use document.execCommand('copy') as navigator.clipboard.writeText() may not work in iframes
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                
+                // Provide visual feedback
+                llmCopyButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    llmCopyButton.textContent = 'Copy to Clipboard';
+                }, 1500);
+            }
+        });
+
+    </script>
+</body>
+</html>

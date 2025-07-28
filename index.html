@@ -22,6 +22,8 @@
             background: linear-gradient(135deg, #f0f9ff, #e0f7fa, #f0f4ff); /* Soft initial gradient */
             background-size: 300% 300%;
             animation: gradientAnimation 15s ease infinite alternate;
+            /* UPDATED CURSOR: Sparkling Star */
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23FFD700" stroke="%23FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>') 12 12, auto;
         }
 
         /* Custom Color Palette */
@@ -33,7 +35,9 @@
             --color-dark-text: #333333;
             --color-light-bg: #FFFFFF;
             --color-accent-dark: #8A2BE2; /* Darker purple for accents */
-            --color-logo-dark: #1A202C; /* Very dark color for logo for contrast */
+            --color-logo-final: #000000; /* Pure black for maximum contrast */
+            --color-card-highlight: #D1C4E9; /* Light purple for card highlight */
+            --color-interactive-cursor: #FF69B4; /* Hot pink for interactive cursor */
         }
         .bg-soft-purple { background-color: var(--color-soft-purple); }
         .text-soft-purple { color: var(--color-soft-purple); }
@@ -47,7 +51,7 @@
         .text-dark-text { color: var(--color-dark-text); }
         .bg-accent-dark { background-color: var(--color-accent-dark); }
         .hover\:bg-accent-dark:hover { background-color: var(--color-accent-dark); }
-        .text-logo-dark { color: var(--color-logo-dark); } /* Apply new logo color */
+        .text-logo-final { color: var(--color-logo-final); } /* Apply new logo color */
 
 
         /* Animated Background Blobs */
@@ -136,16 +140,27 @@
         }
         .tool-card {
             /* Ensure transition applies to display change from none to block */
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Added background-color */
             /* Initial state for cards that will be animated in */
             opacity: 0;
             transform: translateY(20px);
             pointer-events: none; /* Disable interaction when hidden/animating out */
+            border: 1px solid rgba(0,0,0,0.05); /* Default subtle border */
         }
         .tool-card.is-visible {
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
+        }
+        .tool-card:hover { /* Hover effect for tool cards */
+            border-color: var(--color-accent-dark); /* Change border color on hover */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15); /* More pronounced shadow on hover */
+        }
+        /* New: Active category card styling */
+        .tool-card.active-category-card {
+            background-color: var(--color-card-highlight); /* Highlight color */
+            border-color: var(--color-accent-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
 
@@ -178,28 +193,43 @@
             transform: scale(1.02);
         }
 
-        /* CSS Blob in Hero Section */
-        .hero-blob {
+        /* CSS Blobs in Hero Section */
+        .hero-blob-1, .hero-blob-2, .hero-blob-3 {
             position: absolute;
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(45deg, var(--color-soft-purple), var(--color-soft-pink));
             border-radius: 50%;
             filter: blur(60px);
             opacity: 0.7;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(0deg);
-            animation: heroBlobAnimation 10s ease-in-out infinite alternate;
             z-index: 0;
+            animation: heroBlobAnimation 10s ease-in-out infinite alternate;
+        }
+
+        .hero-blob-1 {
+            background: linear-gradient(45deg, var(--color-soft-purple), var(--color-soft-pink));
+            width: 200px; height: 200px;
+            top: 20%; left: 15%;
+            animation-delay: 0s;
+        }
+        .hero-blob-2 {
+            background: linear-gradient(45deg, var(--color-soft-blue), var(--color-soft-green));
+            width: 250px; height: 250px;
+            top: 60%; left: 80%;
+            animation-delay: 3s;
+            animation-duration: 12s;
+        }
+        .hero-blob-3 {
+            background: linear-gradient(45deg, var(--color-soft-pink), var(--color-soft-blue));
+            width: 180px; height: 180px;
+            top: -10%; left: 50%;
+            animation-delay: 6s;
+            animation-duration: 15s;
         }
 
         @keyframes heroBlobAnimation {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-            25% { transform: translate(-45%, -55%) scale(1.1) rotate(10deg); }
-            50% { transform: translate(-50%, -50%) scale(0.9) rotate(0deg); }
-            75% { transform: translate(-55%, -45%) scale(1.15) rotate(-10deg); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(20px, -10px) scale(1.1) rotate(10deg); }
+            50% { transform: translate(-10px, 20px) scale(0.9) rotate(-5deg); }
+            75% { transform: translate(15px, -5px) scale(1.05) rotate(5deg); }
+            100% { transform: translate(0, 0) scale(1) rotate(0deg); }
         }
 
         /* Modal Styles */
@@ -262,6 +292,19 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Tool Section Hiding */
+        .tool-section {
+            display: block; /* Default to block */
+            transition: opacity 0.3s ease-out, height 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out;
+        }
+        .tool-section.hidden-section {
+            opacity: 0;
+            height: 0; /* Collapse height */
+            overflow: hidden; /* Hide content overflow */
+            margin-bottom: 0 !important; /* Remove margin */
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
         /* Mobile specific adjustments */
         @media (max-width: 768px) {
             body {
@@ -272,17 +315,17 @@
                 box-shadow: none; /* No shadow on mobile */
                 min-height: 100vh; /* Full height on mobile */
             }
-            .hero-blob {
-                width: 150px;
-                height: 150px;
-                filter: blur(40px);
+            .hero-blob-1, .hero-blob-2, .hero-blob-3 {
+                width: 100px;
+                height: 100px;
+                filter: blur(30px);
             }
         }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- Animated Background Blobs -->
+    <!-- Animated Background Blobs (for the entire page background) -->
     <div class="blob-container">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -297,7 +340,7 @@
         <header class="bg-light-bg shadow-sm py-4 sticky top-0 z-50">
             <div class="container mx-auto px-4 flex justify-between items-center">
                 <!-- Logo (Plain Text with improved contrast) -->
-                <a href="#" class="text-2xl font-bold text-logo-dark">webflowy</a>
+                <a href="#" class="text-2xl font-bold text-logo-final">webflowy</a>
 
                 <!-- Navigation Links (Desktop) -->
                 <nav class="hidden md:flex space-x-8">
@@ -327,8 +370,10 @@
 
         <!-- Hero Section -->
         <section class="relative py-20 text-center overflow-hidden bg-light-blue bg-opacity-50">
-            <!-- Hero Blob -->
-            <div class="hero-blob"></div>
+            <!-- Multiple Hero Blobs -->
+            <div class="hero-blob-1"></div>
+            <div class="hero-blob-2"></div>
+            <div class="hero-blob-3"></div>
 
             <div class="container mx-auto px-4 relative z-10">
                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-dark-text leading-tight mb-4 animate-fade-in">
@@ -400,372 +445,432 @@
                 </button>
             </div>
 
-            <!-- All Tools Container -->
-            <div id="all-tools-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Individual Tool Sections -->
+            <section id="image-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-image text-soft-purple mr-3"></i> Image Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Optimize, convert, and manipulate your images with ease.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image convert jpg png webp gif resize compress crop ocr text rotate flip optimize favicon generator">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sync-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert images between various formats.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image compress optimize reduce size quality">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Compressor</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Reduce image file size without losing quality.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image resize dimensions scale enlarge shrink">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-expand-arrows-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Resizer</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Adjust image dimensions quickly.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image crop cut trim selection">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-crop-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Cropper</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Crop images to your desired area.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image to text ocr extract text from image scan">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-image"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image to Text (OCR)</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Extract text from images using OCR.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image optimize web performance speed quality">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-tachometer-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Optimizer</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Optimize images for faster web loading.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="favicon generator website icon browser tab">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-star"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Favicon Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Create favicons for your website.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                </div>
+            </section>
 
-                <!-- Image Tools -->
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image convert jpg png webp gif resize compress crop ocr text rotate flip optimize favicon generator">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sync-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert images between various formats.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="document-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-file-alt text-soft-pink mr-3"></i> Document Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Manage and convert your documents efficiently.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="pdf word doc convert to from">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-file-pdf"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF to Word / Word to PDF</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert documents between PDF and Word.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="pdf compress reduce size quality">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-file-compress"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF Compressor</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Reduce the file size of your PDFs.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="pdf merge split combine separate">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-object-group"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF Merger & Splitter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Combine or split PDF documents.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="document converter docx xlsx pptx txt html">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-exchange-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Document Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert various document formats.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image compress optimize reduce size quality">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Compressor</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Reduce image file size without losing quality.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image resize dimensions scale enlarge shrink">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-expand-arrows-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Resizer</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Adjust image dimensions quickly.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image crop cut trim selection">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-crop-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Cropper</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Crop images to your desired area.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image to text ocr extract text from image scan">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-image"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image to Text (OCR)</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Extract text from images using OCR.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image optimize web performance speed quality">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-tachometer-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Optimizer</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Optimize images for faster web loading.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="favicon generator website icon browser tab">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-star"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Favicon Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Create favicons for your website.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
+            </section>
 
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="pdf word doc convert to from">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-file-pdf"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF to Word / Word to PDF</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert documents between PDF and Word.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="calculator-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-calculator text-soft-blue mr-3"></i> Calculator & Converter Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Perform quick calculations and conversions.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="currency converter exchange rates money">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-dollar-sign"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Currency Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert between different currencies.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="unit converter length weight volume temperature">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-ruler-combined"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Unit Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert various units of measurement.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="time zone converter gmt utc local time">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-globe"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Time Zone Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert times across different time zones.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="date difference calculator days months years">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-calendar-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Date Difference Calculator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Calculate the difference between two dates.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="pdf compress reduce size quality">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-file-compress"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF Compressor</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Reduce the file size of your PDFs.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="pdf merge split combine separate">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-object-group"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">PDF Merger & Splitter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Combine or split PDF documents.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="document" data-keywords="document converter docx xlsx pptx txt html">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-exchange-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Document Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert various document formats.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
+            </section>
 
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="currency converter exchange rates money">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-dollar-sign"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Currency Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert between different currencies.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="text-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-font text-soft-green mr-3"></i> Text & Content Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Enhance and analyze your text content.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text case converter uppercase lowercase capitalize toggle">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-text-height"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Case Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Change text to uppercase, lowercase, etc.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="word character counter count text">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-sort-numeric-up-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Word & Character Counter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Count words and characters in your text.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="remove duplicate lines text unique">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-minus-circle"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Remove Duplicate Lines</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Clean up text by removing duplicate lines.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text sorter alphabetize sort lines">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-sort-alpha-down"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Sorter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Sort lines of text alphabetically or numerically.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="readability checker content analysis writing score">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-book-reader"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Readability Checker</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Analyze text for readability and complexity.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="plagiarism checker content originality unique">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-copy"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Plagiarism Checker</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Check content for originality and plagiarism.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <!-- LLM Tool: Text Summarizer -->
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text summarizer summarize content ai llm gemini">
+                        <a href="#" class="tool-card-link" data-llm-tool="summarizer">
+                            <div class="text-4xl text-soft-green mb-4 text-center">✨<i class="fas fa-file-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Summarizer ✨</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Get concise summaries of long texts.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="unit converter length weight volume temperature">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-ruler-combined"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Unit Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert various units of measurement.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="time zone converter gmt utc local time">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-globe"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Time Zone Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert times across different time zones.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="calculator" data-keywords="date difference calculator days months years">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-calendar-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Date Difference Calculator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Calculate the difference between two dates.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
+            </section>
 
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text case converter uppercase lowercase capitalize toggle">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-text-height"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Case Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Change text to uppercase, lowercase, etc.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="developer-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-code text-soft-purple mr-3"></i> Web & Developer Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Essential tools for web development and optimization.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="html css js minifier compress code">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress-alt"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HTML/CSS/JS Minifier</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Minify your web code for faster loading.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="json formatter validator beautify parse">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-brackets-curly"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">JSON Formatter & Validator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Format and validate JSON data.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="base64 encoder decoder convert">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-lock"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Base64 Encoder/Decoder</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Encode and decode Base64 strings.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="url encoder decoder percent encode decode">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-link"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">URL Encoder/Decoder</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Encode and decode URL components.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="regex tester regular expression match">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-code"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Regex Tester</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Test and debug regular expressions.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="markdown html converter md to html">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fab fa-markdown"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Markdown to HTML Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert Markdown text to HTML.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="code formatter beautify js html css json xml">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-indent"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Code Formatter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Beautify and format various code types.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="sitemap generator xml sitemap seo">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sitemap"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Sitemap Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Generate XML sitemaps for SEO.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="robots txt generator seo crawl">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-robot"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Robots.txt Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Create or test your robots.txt file.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="htaccess generator server config redirect">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-server"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HTACCESS Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Generate common .htaccess rules.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <!-- LLM Tool: Code Explainer -->
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="code explainer explain code ai llm gemini">
+                        <a href="#" class="tool-card-link" data-llm-tool="code-explainer">
+                            <div class="text-4xl text-soft-purple mb-4 text-center">✨<i class="fas fa-code"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Code Explainer ✨</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Get clear explanations for code snippets.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="word character counter count text">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-sort-numeric-up-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Word & Character Counter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Count words and characters in your text.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="remove duplicate lines text unique">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-minus-circle"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Remove Duplicate Lines</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Clean up text by removing duplicate lines.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text sorter alphabetize sort lines">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-sort-alpha-down"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Sorter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Sort lines of text alphabetically or numerically.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="readability checker content analysis writing score">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-book-reader"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Readability Checker</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Analyze text for readability and complexity.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="plagiarism checker content originality unique">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-copy"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Plagiarism Checker</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Check content for originality and plagiarism.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <!-- New LLM Tool: Text Summarizer -->
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text summarizer summarize content ai llm gemini">
-                    <a href="#" class="tool-card-link" data-llm-tool="summarizer">
-                        <div class="text-4xl text-soft-green mb-4 text-center">✨<i class="fas fa-file-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Summarizer ✨</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Get concise summaries of long texts.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
+            </section>
 
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="html css js minifier compress code">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress-alt"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HTML/CSS/JS Minifier</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Minify your web code for faster loading.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="design-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-palette text-soft-pink mr-3"></i> Design & Color Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Discover and manage colors for your designs.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="color picker from image extract colors">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-eye-dropper"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Color Picker from Image</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Extract colors directly from an image.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="hex rgb converter color codes">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-hashtag"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HEX to RGB Converter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Convert color codes between HEX and RGB.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="gradient generator css background colors">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-fill-drip"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Gradient Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Create beautiful CSS color gradients.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="contrast checker accessibility wcag">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-adjust"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Contrast Checker</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Check color contrast for web accessibility.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="palette generator color scheme harmony">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-swatchbook"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Palette Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Generate harmonious color palettes.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="json formatter validator beautify parse">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-brackets-curly"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">JSON Formatter & Validator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Format and validate JSON data.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="base64 encoder decoder convert">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-lock"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Base64 Encoder/Decoder</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Encode and decode Base64 strings.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="url encoder decoder percent encode decode">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-link"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">URL Encoder/Decoder</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Encode and decode URL components.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="regex tester regular expression match">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-code"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Regex Tester</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Test and debug regular expressions.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="markdown html converter md to html">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fab fa-markdown"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Markdown to HTML Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert Markdown text to HTML.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="code formatter beautify js html css json xml">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-indent"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Code Formatter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Beautify and format various code types.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="sitemap generator xml sitemap seo">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sitemap"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Sitemap Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Generate XML sitemaps for SEO.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="robots txt generator seo crawl">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-robot"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Robots.txt Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Create or test your robots.txt file.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 opacity-0 translate-y-4" data-category="developer" data-keywords="htaccess generator server config redirect">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-server"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HTACCESS Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Generate common .htaccess rules.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <!-- New LLM Tool: Code Explainer -->
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="developer" data-keywords="code explainer explain code ai llm gemini">
-                    <a href="#" class="tool-card-link" data-llm-tool="code-explainer">
-                        <div class="text-4xl text-soft-purple mb-4 text-center">✨<i class="fas fa-code"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Code Explainer ✨</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Get clear explanations for code snippets.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
+            </section>
 
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="color picker from image extract colors">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-eye-dropper"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Color Picker from Image</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Extract colors directly from an image.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="seo-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-chart-line text-soft-blue mr-3"></i> SEO & Marketing Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Boost your website's visibility and performance.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="keyword density checker seo analysis">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-key"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Keyword Density Checker</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Analyze keyword density of your content.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="meta tag analyzer seo title description">
+                        <a href="#" class="tool-card-link" data-llm-tool="meta-description-generator">
+                            <div class="text-4xl text-soft-blue mb-4 text-center">✨<i class="fas fa-tags"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Meta Description Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Analyze meta tags for SEO optimization.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="word counter text seo content">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-spell-check"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Word Counter</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Count words in your content for SEO.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="url shortener link shorten share">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-cut"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">URL Shortener</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Shorten long URLs for easy sharing.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="hex rgb converter color codes">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-hashtag"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">HEX to RGB Converter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Convert color codes between HEX and RGB.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="gradient generator css background colors">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-fill-drip"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Gradient Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Create beautiful CSS color gradients.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="contrast checker accessibility wcag">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-adjust"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Contrast Checker</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Check color contrast for web accessibility.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="design" data-keywords="palette generator color scheme harmony">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-pink mb-4 text-center"><i class="fas fa-swatchbook"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Palette Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Generate harmonious color palettes.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
+            </section>
 
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="keyword density checker seo analysis">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-key"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Keyword Density Checker</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Analyze keyword density of your content.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
+            <section id="utility-tools-section" class="tool-section mb-12">
+                <h2 class="text-3xl font-bold text-dark-text mb-3 flex items-center">
+                    <i class="fas fa-wrench text-soft-green mr-3"></i> General Utility Tools
+                </h2>
+                <p class="text-gray-600 mb-6">Handy utilities for everyday tasks.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="utility" data-keywords="qr code generator scanner create read">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-qrcode"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">QR Code Generator & Scanner</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Create and scan QR codes.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
+                    <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="utility" data-keywords="barcode generator create scan">
+                        <a href="#" class="tool-card-link">
+                            <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-barcode"></i></div>
+                            <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Barcode Generator</h3>
+                            <p class="text-gray-600 text-sm mb-4 text-center">Generate various types of barcodes.</p>
+                            <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
+                        </a>
+                    </div>
                 </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="meta tag analyzer seo title description">
-                    <a href="#" class="tool-card-link" data-llm-tool="meta-description-generator">
-                        <div class="text-4xl text-soft-blue mb-4 text-center">✨<i class="fas fa-tags"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Meta Tag Analyzer</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Analyze meta tags for SEO optimization.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="word counter text seo content">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-spell-check"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Word Counter</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Count words in your content for SEO.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="seo" data-keywords="url shortener link shorten share">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-blue mb-4 text-center"><i class="fas fa-cut"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">URL Shortener</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Shorten long URLs for easy sharing.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="utility" data-keywords="qr code generator scanner create read">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-qrcode"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">QR Code Generator & Scanner</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Create and scan QR codes.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-                <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="utility" data-keywords="barcode generator create scan">
-                    <a href="#" class="tool-card-link">
-                        <div class="text-4xl text-soft-green mb-4 text-center"><i class="fas fa-barcode"></i></div>
-                        <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Barcode Generator</h3>
-                        <p class="text-gray-600 text-sm mb-4 text-center">Generate various types of barcodes.</p>
-                        <div class="w-full text-center bg-accent-dark text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-colors duration-200">Use Tool</div>
-                    </a>
-                </div>
-            </div>
+            </section>
 
         </main>
 
@@ -805,7 +910,7 @@
             <div id="llm-output-container" class="mt-6 p-4 bg-gray-100 rounded-md border border-gray-200 hidden">
                 <h3 class="text-xl font-semibold text-dark-text mb-2">Output:</h3>
                 <pre id="llm-output-text" class="whitespace-pre-wrap font-mono text-sm text-gray-800"></pre>
-                <button id="llm-copy-button" class="mt-4 bg-soft-blue text-dark-text font-semibold py-2 px-4 rounded-md hover:opacity-90 transition-all duration-200">
+                <button id="llm-copy-button" class="mt-4 bg-soft-blue text-dark-text font-semibold py-2 px-4 rounded-md hover:opacity-90 transition-colors duration-200">
                     Copy to Clipboard
                 </button>
             </div>
@@ -856,81 +961,110 @@
         const toolCards = document.querySelectorAll('.tool-card');
         const categoryButtons = document.querySelectorAll('.category-filter-button');
         const noResultsMessage = document.getElementById('no-results-message');
-        const allToolsContainer = document.getElementById('all-tools-container');
+        const allToolSections = document.querySelectorAll('.tool-section'); // Get all tool sections
 
         let activeCategory = 'all'; // Default active category
 
         // Function to filter tools based on category and search term
         function filterTools() {
             const searchTerm = searchInput.value.toLowerCase();
-            let visibleCards = [];
-            let hiddenCards = [];
+            let totalVisibleCards = 0;
 
-            toolCards.forEach(card => {
-                const toolName = card.querySelector('h3').textContent.toLowerCase();
-                const toolDescription = card.querySelector('p').textContent.toLowerCase();
-                const toolKeywords = card.dataset.keywords ? card.dataset.keywords.toLowerCase() : '';
-                const cardCategory = card.dataset.category;
+            allToolSections.forEach(section => {
+                const sectionCategory = section.id.replace('-tools-section', '');
+                let sectionHasVisibleCards = false;
 
-                const matchesSearch = toolName.includes(searchTerm) ||
-                                      toolDescription.includes(searchTerm) ||
-                                      toolKeywords.includes(searchTerm);
+                // Determine if the section itself should be hidden based on active category
+                const isSectionHiddenByCategory = (activeCategory !== 'all' && sectionCategory !== activeCategory);
 
-                const matchesCategory = (activeCategory === 'all' || cardCategory === activeCategory);
+                const cardsInSection = section.querySelectorAll('.tool-card');
+                let visibleCardsInSection = [];
+                let hiddenCardsInSection = [];
 
-                if (matchesSearch && matchesCategory) {
-                    visibleCards.push(card);
-                } else {
-                    hiddenCards.push(card);
-                }
-            });
+                cardsInSection.forEach(card => {
+                    const toolName = card.querySelector('h3').textContent.toLowerCase();
+                    const toolDescription = card.querySelector('p').textContent.toLowerCase();
+                    const toolKeywords = card.dataset.keywords ? card.dataset.keywords.toLowerCase() : '';
 
-            // Animate out hidden cards first
-            hiddenCards.forEach(card => {
-                if (card.classList.contains('is-visible')) { // Only animate if currently visible
-                    card.classList.remove('is-visible');
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    card.style.pointerEvents = 'none';
-                    card.style.transitionDelay = '0ms';
-                    // Use 'transitionend' to set display: 'none' precisely after animation
-                    const onTransitionEnd = () => {
-                        card.style.display = 'none';
-                        card.removeEventListener('transitionend', onTransitionEnd);
-                    };
-                    card.addEventListener('transitionend', onTransitionEnd);
-                } else {
-                    // If already hidden or not visible, ensure it's display: none
-                    card.style.display = 'none';
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    card.style.pointerEvents = 'none';
-                    card.style.transitionDelay = '0ms';
-                }
-            });
+                    const matchesSearch = toolName.includes(searchTerm) ||
+                                          toolDescription.includes(searchTerm) ||
+                                          toolKeywords.includes(searchTerm);
 
-            // Animate in visible cards with a staggered delay
-            let staggeredDelay = 0;
-            visibleCards.forEach(card => {
-                card.style.display = 'block'; // Make it visible in layout immediately
-                card.style.pointerEvents = 'auto';
-                card.style.opacity = '0'; // Reset for animation
-                card.style.transform = 'translateY(20px)'; // Reset for animation
-                card.style.transitionDelay = `${staggeredDelay}ms`;
-
-                // Force reflow to ensure initial state is applied before transition
-                void card.offsetWidth;
-
-                requestAnimationFrame(() => {
-                    card.classList.add('is-visible'); // Add class to trigger animation
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0px)';
+                    if (matchesSearch && !isSectionHiddenByCategory) { // Card must match search AND its section must not be hidden by category
+                        visibleCardsInSection.push(card);
+                        sectionHasVisibleCards = true;
+                    } else {
+                        hiddenCardsInSection.push(card);
+                    }
                 });
 
-                staggeredDelay += 50;
+                // Animate out hidden cards in this section
+                hiddenCardsInSection.forEach(card => {
+                    if (card.classList.contains('is-visible')) { // Only animate if currently visible
+                        card.classList.remove('is-visible');
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        card.style.pointerEvents = 'none';
+                        card.style.transitionDelay = '0ms';
+                        const onTransitionEnd = () => {
+                            card.style.display = 'none';
+                            card.removeEventListener('transitionend', onTransitionEnd);
+                        };
+                        card.addEventListener('transitionend', onTransitionEnd);
+                    } else {
+                        // If already hidden or not visible, ensure it's display: none
+                        card.style.display = 'none';
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        card.style.pointerEvents = 'none';
+                        card.style.transitionDelay = '0ms';
+                    }
+                });
+
+                // Animate in visible cards in this section with staggered delay
+                let staggeredDelay = 0;
+                visibleCardsInSection.forEach(card => {
+                    card.style.display = 'block'; // Make it visible in layout immediately
+                    card.style.pointerEvents = 'auto';
+                    card.style.opacity = '0'; // Reset for animation
+                    card.style.transform = 'translateY(20px)'; // Reset for animation
+                    card.style.transitionDelay = `${staggeredDelay}ms`;
+
+                    void card.offsetWidth; // Force reflow
+
+                    requestAnimationFrame(() => {
+                        card.classList.add('is-visible');
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0px)';
+                    });
+                    staggeredDelay += 50;
+                });
+
+                // Manage section visibility after processing its cards
+                if (sectionHasVisibleCards || (activeCategory === 'all' && searchTerm === '')) {
+                    // Only show section if it has visible cards OR if "All Tools" is active and search is empty
+                    section.classList.remove('hidden-section');
+                    section.style.height = 'auto'; /* Ensure height is auto for visible sections */
+                    section.style.opacity = '1';
+                    totalVisibleCards += visibleCardsInSection.length;
+                } else {
+                    // Animate out the section itself if no cards are visible or it's filtered out
+                    if (!section.classList.contains('hidden-section')) { // Only animate if not already hidden
+                        section.style.opacity = '0';
+                        section.style.height = '0';
+                        section.style.marginBottom = '0';
+                        section.style.paddingTop = '0';
+                        section.style.paddingBottom = '0';
+                        const onSectionTransitionEnd = () => {
+                            section.classList.add('hidden-section'); // Add class to fully hide
+                            section.removeEventListener('transitionend', onSectionTransitionEnd);
+                        };
+                        section.addEventListener('transitionend', onSectionTransitionEnd);
+                    }
+                }
             });
 
-            if (visibleCards.length === 0) {
+            if (totalVisibleCards === 0) {
                 noResultsMessage.classList.remove('hidden');
             } else {
                 noResultsMessage.classList.add('hidden');
@@ -953,6 +1087,17 @@
                 });
                 button.classList.add('active-category', 'bg-accent-dark', 'text-white');
                 button.classList.remove('bg-light-bg', 'text-dark-text');
+
+                // Add/remove active-category-card class from tool cards
+                toolCards.forEach(card => {
+                    const cardCategory = card.dataset.category;
+                    if (activeCategory === 'all' || cardCategory === activeCategory) {
+                        card.classList.add('active-category-card');
+                    } else {
+                        card.classList.remove('active-category-card');
+                    }
+                });
+
 
                 filterTools(); // Re-filter based on new category
             });

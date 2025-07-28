@@ -231,7 +231,7 @@
             100% { transform: translate(0, 0) scale(1) rotate(0deg); }
         }
 
-        /* Modal Styles */
+        /* Modal Styles (for LLM tools only now) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -253,19 +253,15 @@
         }
         .modal-content {
             background-color: white;
-            padding: 1rem; /* Reduced padding for iframe */
+            padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 90%;
-            max-width: 900px; /* Increased max-width for tools */
-            height: 90%; /* Fixed height for iframe content */
-            max-height: 700px; /* Max height for modal content */
+            max-width: 700px;
             transform: translateY(-20px);
             opacity: 0;
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
             position: relative;
-            display: flex; /* Use flex for modal content */
-            flex-direction: column;
         }
         .modal-overlay.show .modal-content {
             transform: translateY(0);
@@ -273,20 +269,13 @@
         }
         .modal-close-button {
             position: absolute;
-            top: 0.5rem; /* Adjusted position */
-            right: 0.5rem; /* Adjusted position */
+            top: 1rem;
+            right: 1rem;
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
             color: #555;
-            z-index: 10; /* Ensure it's above iframe */
-        }
-        .modal-iframe {
-            flex-grow: 1; /* Iframe takes available space */
-            border: none;
-            width: 100%;
-            height: 100%;
         }
         .modal-loading-spinner {
             border: 4px solid #f3f3f3;
@@ -472,7 +461,7 @@
                 <p class="text-gray-600 mb-6">Optimize, convert, and manipulate your images with ease.</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image convert jpg png webp gif resize compress crop ocr text rotate flip optimize favicon generator">
-                        <a href="image_converter.html" class="tool-card-link" data-tool-file="image_converter.html">
+                        <a href="image_converter.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-sync-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Converter</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Convert images between various formats.</p>
@@ -480,7 +469,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image compress optimize reduce size quality">
-                        <a href="image_compressor.html" class="tool-card-link" data-tool-file="image_compressor.html">
+                        <a href="image_compressor.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-compress"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Compressor</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Reduce image file size without losing quality.</p>
@@ -488,7 +477,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image resize dimensions scale enlarge shrink">
-                        <a href="image_resizer.html" class="tool-card-link" data-tool-file="image_resizer.html">
+                        <a href="image_resizer.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-expand-arrows-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Resizer</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Adjust image dimensions quickly.</p>
@@ -496,7 +485,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image crop cut trim selection">
-                        <a href="image_cropper.html" class="tool-card-link" data-tool-file="image_cropper.html">
+                        <a href="image_cropper.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-crop-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Cropper</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Crop images to your desired area.</p>
@@ -504,7 +493,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image to text ocr extract text from image scan">
-                        <a href="image_ocr.html" class="tool-card-link" data-tool-file="image_ocr.html">
+                        <a href="image_ocr.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-file-image"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image to Text (OCR)</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Extract text from images using OCR.</p>
@@ -512,7 +501,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="image optimize web performance speed quality">
-                        <a href="image_optimizer.html" class="tool-card-link" data-tool-file="image_optimizer.html">
+                        <a href="image_optimizer.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-tachometer-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Image Optimizer</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Optimize images for faster web loading.</p>
@@ -520,7 +509,7 @@
                         </a>
                     </div>
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="image" data-keywords="favicon generator website icon browser tab">
-                        <a href="favicon_generator.html" class="tool-card-link" data-tool-file="favicon_generator.html">
+                        <a href="favicon_generator.html" class="tool-card-link">
                             <div class="text-4xl text-soft-purple mb-4 text-center"><i class="fas fa-star"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Favicon Generator</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Create favicons for your website.</p>
@@ -668,7 +657,7 @@
                     </div>
                     <!-- LLM Tool: Text Summarizer -->
                     <div class="tool-card bg-light-bg p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100" data-category="text" data-keywords="text summarizer summarize content ai llm gemini">
-                        <a href="text_summarizer.html" class="tool-card-link" data-llm-tool="summarizer">
+                        <a href="#" class="tool-card-link" data-llm-tool="summarizer">
                             <div class="text-4xl text-soft-green mb-4 text-center">✨<i class="fas fa-file-alt"></i></div>
                             <h3 class="text-xl font-semibold text-dark-text mb-2 text-center">Text Summarizer ✨</h3>
                             <p class="text-gray-600 text-sm mb-4 text-center">Get concise summaries of long texts.</p>
@@ -911,15 +900,7 @@
         </footer>
     </div>
 
-    <!-- Universal Tool Modal Overlay -->
-    <div id="tool-modal-overlay" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-button" id="tool-modal-close">&times;</button>
-            <iframe id="tool-modal-iframe" class="modal-iframe"></iframe>
-        </div>
-    </div>
-
-    <!-- Universal LLM Modal (for direct LLM calls like Summarizer) -->
+    <!-- Universal LLM Modal (for direct LLM interactions) -->
     <div id="llm-modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-button" id="llm-modal-close-llm">&times;</button>
@@ -1152,48 +1133,6 @@
         // Initial filter to show all tools on load
         window.addEventListener('load', () => {
             filterTools();
-        });
-
-
-        // Universal Tool Modal Functionality
-        const toolModalOverlay = document.getElementById('tool-modal-overlay');
-        const toolModalCloseButton = document.getElementById('tool-modal-close');
-        const toolModalIframe = document.getElementById('tool-modal-iframe');
-
-        function openToolModal(toolFile) {
-            toolModalIframe.src = toolFile;
-            toolModalOverlay.classList.add('show');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
-        }
-
-        function closeToolModal() {
-            toolModalOverlay.classList.remove('show');
-            toolModalIframe.src = ''; // Clear iframe content
-            document.body.style.overflow = ''; // Restore scrolling
-        }
-
-        toolModalCloseButton.addEventListener('click', closeToolModal);
-        toolModalOverlay.addEventListener('click', (e) => {
-            if (e.target === toolModalOverlay) {
-                closeToolModal();
-            }
-        });
-
-        // Event listeners for tool cards to open in modal
-        document.querySelectorAll('.tool-card-link').forEach(link => {
-            // Check if it's an LLM tool (handled by separate modal) or a file-based tool
-            if (!link.dataset.llmTool) {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent default link behavior
-                    const toolFile = link.dataset.toolFile;
-                    if (toolFile) {
-                        openToolModal(toolFile);
-                    } else {
-                        // Fallback for tools without a specific file (e.g., placeholder or not yet implemented)
-                        alertMessage('This tool is not yet implemented or has no dedicated page.');
-                    }
-                });
-            }
         });
 
 

@@ -1,1 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor - webflowy</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Marked.js CDN for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff, #e0f7fa, #f0f4ff); /* Soft background */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333333;
+            cursor: default; /* Standard cursor */
+        }
+        .tool-container {
+            background-color: #FFFFFF;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 1000px; /* Wider for two panels */
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 300px; /* Taller for editing */
+            font-family: 'Fira Code', 'Inter', monospace; /* Monospace for code/markdown */
+        }
+        .preview-output {
+            background-color: #f9fafb; /* Light gray for preview */
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: left;
+            min-height: 300px; /* Match textarea height */
+            overflow-y: auto;
+        }
+        .btn-primary {
+            background-color: #8A2BE2; /* Accent dark purple */
+            color: white;
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #6A1B9A; /* Darker accent */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .btn-secondary {
+            background-color: #ADD8E6; /* Soft blue */
+            color: #333333;
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-secondary:hover {
+            background-color: #87CEEB; /* Darker soft blue */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* Custom scrollbar for textareas and preview */
+        textarea::-webkit-scrollbar, .preview-output::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track, .preview-output::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb, .preview-output::-webkit-scrollbar-thumb {
+            background: #8A2BE2; /* Accent dark purple */
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover, .preview-output::-webkit-scrollbar-thumb:hover {
+            background: #6A1B9A; /* Darker accent */
+        }
+        /* Ensure text cursor for text input areas */
+        textarea, input[type="text"] {
+            cursor: text;
+        }
+        /* Standard pointer for interactive elements */
+        button, a, input[type="submit"], input[type="button"], label {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="tool-container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Markdown Editor with Live Preview</h1>
+        <p class="text-gray-600 mb-6">Write your Markdown on the left, see the live HTML preview on the right.</p>
+
+        <div class="flex flex-col md:flex-row gap-6 mb-8">
+            <div class="md:w-1/2">
+                <label for="markdownInput" class="block text-gray-700 text-left text-lg font-medium mb-2">Markdown Input:</label>
+                <textarea id="markdownInput" class="w-full p-4 border-2 border-soft-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-dark text-lg" placeholder="Start writing Markdown here..."># Hello Webflowy!
+
+This is a **Markdown Editor** with a *Live Preview*.
+
+## Features:
+- Write Markdown
+- See instant HTML conversion
+- Great for notes, documentation, or web content
+
+\`\`\`javascript
+// Example code block
+function greet(name) {
+  console.log('Hello, ' + name + '!');
+}
+greet('World');
+\`\`\`
+
+Visit our [homepage](/) for more tools!</textarea>
+            </div>
+            <div class="md:w-1/2">
+                <label for="htmlOutput" class="block text-gray-700 text-left text-lg font-medium mb-2">HTML Preview:</label>
+                <div id="htmlOutput" class="preview-output"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4">
+            <button id="copyMarkdownButton" class="btn-secondary">
+                <i class="fas fa-copy mr-2"></i> Copy Markdown
+            </button>
+            <button id="copyHtmlButton" class="btn-secondary">
+                <i class="fas fa-code mr-2"></i> Copy HTML
+            </button>
+            <button id="clearButton" class="bg-red-500 text-white font-semibold py-3 px-6 rounded-full shadow-md hover:bg-red-600">
+                <i class="fas fa-trash-alt mr-2"></i> Clear All
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const markdownInput = document.getElementById('markdownInput');
+        const htmlOutput = document.getElementById('htmlOutput');
+        const copyMarkdownButton = document.getElementById('copyMarkdownButton');
+        const copyHtmlButton = document.getElementById('copyHtmlButton');
+        const clearButton = document.getElementById('clearButton');
+
+        // Function to render Markdown to HTML
+        function renderMarkdown() {
+            // Using marked.js to convert markdown to HTML
+            htmlOutput.innerHTML = marked.parse(markdownInput.value);
+        }
+
+        // Event listener for input changes in the markdown textarea
+        markdownInput.addEventListener('input', renderMarkdown);
+
+        // Initial render on load with placeholder text
+        window.addEventListener('load', () => {
+            renderMarkdown();
+        });
+
+        // Copy Markdown to Clipboard
+        copyMarkdownButton.addEventListener('click', () => {
+            if (markdownInput.value) {
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = markdownInput.value;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                alertMessage('Markdown copied to clipboard!');
+            } else {
+                alertMessage('Nothing to copy!');
+            }
+        });
+
+        // Copy HTML to Clipboard
+        copyHtmlButton.addEventListener('click', () => {
+            if (htmlOutput.innerHTML) {
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = htmlOutput.innerHTML;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                alertMessage('HTML copied to clipboard!');
+            } else {
+                alertMessage('Nothing to copy!');
+            }
+        });
+
+        // Clear All
+        clearButton.addEventListener('click', () => {
+            markdownInput.value = '';
+            renderMarkdown(); // Clear HTML preview as well
+            alertMessage('Editor cleared!');
+        });
+
+        // Simple alert message function (since we cannot use window.alert)
+        function alertMessage(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.textContent = message;
+            alertDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #333;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1001;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.style.opacity = '1';
+            }, 10);
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                alertDiv.addEventListener('transitionend', () => alertDiv.remove());
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
 
